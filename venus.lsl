@@ -272,18 +272,18 @@ SetFaceTexture(string what,vector color,float visible)
 }
 Blitz()
 {
-    if(update_params!=[])
+    if(llGetListLength(update_params))
     {
+        db((string)    llGetWallclock()+"Params("+(string)llGetListLength(update_params)+"):["+llList2CSV(update_params)+"]");
+        #ifdef DEBUG
+        //llSetText("O:48274(52694)/65536\nC:"+
+        //    (string)llGetUsedMemory()
+        //    +"("+(string)llGetSPMaxMemory()
+        //    +")/"+(string)llGetMemoryLimit()+"\nLast Message:\n"+lastmessage
+        //    ,<1,1,1>, 1.0);
+        #endif
         llSetLinkPrimitiveParamsFast(2,update_params);
         update_params=[];
-        // llOwnerSay("Blitz");
-        #ifdef DEBUG
-        llSetText("O:48274(52694)/65536\nC:"+
-            (string)llGetUsedMemory()
-            +"("+(string)llGetSPMaxMemory()
-            +")/"+(string)llGetMemoryLimit()+"\nLast Message:\n"+lastmessage
-            ,<1,1,1>, 1.0);
-        #endif
     }
 }
 Light(integer on)
@@ -501,7 +501,8 @@ SetFaceShape(integer idx)
 {
     /*  TODO: Change the face IDs to match the HUD ones and avoid all this duplicated logic. */
     /*  Stock IDs appear to start at 1, Motoko' appear to start at 0. */
-    if(idx < 0 ) idx = 0;
+    db("raw requested face:"+(string)idx);
+    if(idx < 1 ) idx = 1;
     else if(idx > 13) idx = 13;
     integer previous_face = curr_face_shape;
     string id;
@@ -512,6 +513,7 @@ SetFaceShape(integer idx)
         id = "e"+(string)idx;
     }
     SetFaceTexture(id,c_skin,TRUE);
+    db("Previous Face:"+(string)previous_face+"Requested Face:"+id);
     /*  Fix up previous face shell. */
     if(idx < 14)
     {// This should be hit every time except when toggling tongue
@@ -616,6 +618,7 @@ SetFaceShape(integer idx)
     if(idx<14){
         curr_face_shape = idx;
     }
+    // db("FACE STATE:"+(string)curr_face_shape);
     db("FACE STATE:"+(string)curr_face_shape);
 }
 default
@@ -632,11 +635,11 @@ SetEyeDirection();
 }
 timer()
 {
-// llSetText("O:48274(52694)/65536\nC:"+
-    // (string)llGetUsedMemory()
-    // +"("+(string)llGetSPMaxMemory()
-    // +")/"+(string)llGetMemoryLimit()+"\nLast Message:\n"+lastmessage
-    // ,<1,1,1>, 1.0);
+llSetText("Yes, my face can look broken.\nO:48274(52694)/65536\nC:"+
+    (string)llGetUsedMemory()
+    +"("+(string)llGetSPMaxMemory()
+    +")/"+(string)llGetMemoryLimit()+"\nLast Message:\n"+lastmessage
+    ,<1,1,1>, 1.0);
     #ifdef can_blink
     if(need_blinking)
     {
@@ -683,15 +686,19 @@ timer()
         if(is_typing && (mew & AGENT_TYPING)!=AGENT_TYPING)
         {
             is_typing = FALSE;
+            db("backup:"+(string)backup_shell);
             SetFaceShape(backup_shell);
         }
         if(is_typing)
         {
             /* TODO Maybe use a less random animation? */
-            integer a;
-            while (a == curr_face_shape)
-                a = (integer)(llFrand(12 - 0 + 1));
-            SetFaceShape(a);
+            // float a = curr_face_shape + 1;
+            float a;
+            while (a == curr_face_shape || a < 1){
+                a = llFrand(12);
+            }
+            db("Result:"+(string)a);
+            SetFaceShape((integer)a);
         }
     }
 // */
@@ -713,6 +720,7 @@ listen(integer ch,string name,key id,string msg)
     string param1 = llList2String(data,1);
     string param2 = llList2String(data,2);
     string param3 = llList2String(data,3);
+    db("Recieved '"+msg+"'");
     if(msg == "Y!"){
         eyes_visible = FALSE;
         first_pass = TRUE;
