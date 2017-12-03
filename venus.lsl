@@ -15,8 +15,8 @@ TODO:
 */
 // #define debug_mode
 //#define ADAPTIVE_IRISES /*  TRUE to use outer eye layers for adaptive pupils. */
-// #define debug_output
-#ifdef debug_output
+// #define DEBUG
+#ifdef DEBUG
 #define db(a) llWhisper(DEBUG_CHANNEL,(string)a);
 #else
 #define db(a) /*noop*/
@@ -42,6 +42,7 @@ string lastmessage;
 #define t_face_noshell_nolid_r ""
 #define t_face_noshell_r       ""
 #define t_face_r               ""
+#define t_blush                ""
 /*  Colors */
 #define c_eye_l <1,1,1>
 #define c_eye_pupil_l <1,1,1>
@@ -276,11 +277,13 @@ Blitz()
         llSetLinkPrimitiveParamsFast(2,wert);
         wert=[];
         // llOwnerSay("Blitz");
+        #ifdef DEBUG
         llSetText("O:48274(52694)/65536\nC:"+
             (string)llGetUsedMemory()
             +"("+(string)llGetSPMaxMemory()
             +")/"+(string)llGetMemoryLimit()+"\nLast Message:\n"+lastmessage
             ,<1,1,1>, 1.0);
+        #endif
     }
 }
 Light(integer on)
@@ -1024,6 +1027,7 @@ else if(cmd == "Exp")
 state_entry()
 {
     llScriptProfiler(PROFILE_SCRIPT_MEMORY);
+    llSetText("",ZERO_VECTOR,0);
     Blitz();
 // llSetLinkTexture(LINK_SET, TEXTURE_BLANK,ALL_SIDES);
 /*  Gut Utilizator's scripts */
