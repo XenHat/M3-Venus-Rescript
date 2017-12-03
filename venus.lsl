@@ -206,14 +206,14 @@ Probe()
     #endif
 }
 #define xlGetFaceIndex(a,b) llList2Integer(prims,llListFindList(prims,[a])+(2+b))
-// #define LN(a) llList2Integer(prim_names_id,llListFindList(prim_names_id,[a])+1)
-#define LN(a) llList2Integer(prims,llListFindList(prims,[a])+1)
+// #define xlGetLinkNumber(a) llList2Integer(prim_names_id,llListFindList(prim_names_id,[a])+1)
+#define xlGetLinkNumber(a) llList2Integer(prims,llListFindList(prims,[a])+1)
 SetFaceTexture(string what,vector color,float visible)
 {
     db("SetFaceTexture in == '"
         + what + ", "+ (string)color + "," + (string)visible + ","
         + (string)eyes_visible + "'");
-    integer lin = LN(what);
+    integer lin = xlGetLinkNumber(what);
     if(lin < 1) return;
     integer face0 = xlGetFaceIndex(what,0);
     integer face1 = xlGetFaceIndex(what,1);
@@ -288,13 +288,13 @@ Blitz()
 }
 Light(integer on)
 {
-    integer lin = LN("facelight");
+    integer lin = xlGetLinkNumber("facelight");
     if(lin < 1) return;
     llSetLinkPrimitiveParamsFast(lin,[PRIM_POINT_LIGHT,on,<1,1,1>,1.0,10.0,0.75]);
 }
 SetEarsShape(integer mode)
 {
-    integer lin = LN("ears");
+    integer lin = xlGetLinkNumber("ears");
     if(lin < 1) return;
     integer face1 = xlGetFaceIndex("ears",0); /* human right */
     integer face2 = xlGetFaceIndex("ears",1);
@@ -333,7 +333,7 @@ integer i = 0;
 string meshname;
 while (i < 4){
     meshname = "blink"+(string)i;
-    lin = LN(meshname);
+    lin = xlGetLinkNumber(meshname);
     if(lin != -1){
             // Note: This code will break if the id are different accross meshes
             if(right)
@@ -409,7 +409,7 @@ while (i < 4){
 //}
 SetEyeDirection()
 {
-    integer lin = LN("eyes");
+    integer lin = xlGetLinkNumber("eyes");
     if(lin < 1) return;
     integer face1 = xlGetFaceIndex("eyes",1);
 // integer face2 = xlGetFaceIndex("eyes",2);
@@ -535,11 +535,11 @@ SetFaceShape(integer idx)
     }
     /*  Do teeth. */
     integer teeth_visible = 1;
-    integer lin = LN("eyes");
+    integer lin = xlGetLinkNumber("eyes");
     if(lin < 0) return;
-    integer lintong = LN("tongue");
+    integer lintong = xlGetLinkNumber("tongue");
     if(lintong < 0) return;
-    integer linteet = LN("teeth");
+    integer linteet = xlGetLinkNumber("teeth");
     if(linteet < 0) return;
     db("Tongue:"+(string)lintong);
     if(11 <= idx) teeth_visible = 0;
