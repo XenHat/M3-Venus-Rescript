@@ -618,11 +618,6 @@ SetFaceShape(integer idx)
     }
     db("FACE STATE:"+(string)curr_face_shape);
 }
-
-integer random_integer(integer min, integer max)
-{
-    return min + (integer)(llFrand(max - min + 1));
-}
 default
 {
     changed(integer change)
@@ -692,8 +687,10 @@ timer()
         }
         if(is_typing)
         {
-            integer a = random_integer(0,12);
-            while (a == curr_face_shape) a = random_integer(0,12);
+            /* TODO Maybe use a less random animation? */
+            integer a;
+            while (a == curr_face_shape)
+                a = (integer)(llFrand(12 - 0 + 1));
             SetFaceShape(a);
         }
     }
