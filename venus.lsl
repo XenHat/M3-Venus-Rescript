@@ -205,7 +205,7 @@ Probe()
     db(llList2CSV(prims));
     #endif
 }
-#define FI(a,b) llList2Integer(prims,llListFindList(prims,[a])+(2+b))
+#define xlGetFaceIndex(a,b) llList2Integer(prims,llListFindList(prims,[a])+(2+b))
 // #define LN(a) llList2Integer(prim_names_id,llListFindList(prim_names_id,[a])+1)
 #define LN(a) llList2Integer(prims,llListFindList(prims,[a])+1)
 SetFaceTexture(string what,vector color,float visible)
@@ -215,10 +215,10 @@ SetFaceTexture(string what,vector color,float visible)
         + (string)eyes_visible + "'");
     integer lin = LN(what);
     if(lin < 1) return;
-    integer face0 = FI(what,0);
-    integer face1 = FI(what,1);
-    integer face2 = FI(what,2);
-    integer face3 = FI(what,3);
+    integer face0 = xlGetFaceIndex(what,0);
+    integer face1 = xlGetFaceIndex(what,1);
+    integer face2 = xlGetFaceIndex(what,2);
+    integer face3 = xlGetFaceIndex(what,3);
     /* Save tremendous amounts of memory by avoiding list copy-and-addition */
     wert += [PRIM_LINK_TARGET,lin,PRIM_COLOR,face0,color,visible,PRIM_COLOR,face1,color,visible];
     if(what != "eyes"){
@@ -296,10 +296,10 @@ SetEarsShape(integer mode)
 {
     integer lin = LN("ears");
     if(lin < 1) return;
-    integer face1 = FI("ears",0); /* human right */
-    integer face2 = FI("ears",1);
-    integer face3 = FI("ears",2); /* human left */
-    integer face4 = FI("ears",3);
+    integer face1 = xlGetFaceIndex("ears",0); /* human right */
+    integer face2 = xlGetFaceIndex("ears",1);
+    integer face3 = xlGetFaceIndex("ears",2); /* human left */
+    integer face4 = xlGetFaceIndex("ears",3);
     llSetLinkPrimitiveParamsFast(lin,[
         PRIM_COLOR,face1,c_skin,mode==1,PRIM_COLOR,face3,c_skin,mode==1, /*  hoomin */
         PRIM_COLOR,face2,c_skin,mode==2,PRIM_COLOR,face4,c_skin,mode==2
@@ -338,13 +338,13 @@ while (i < 4){
             // Note: This code will break if the id are different accross meshes
             if(right)
             {
-                skinFace = FI(meshname,0);
-                lashskin = FI(meshname,2);
+                skinFace = xlGetFaceIndex(meshname,0);
+                lashskin = xlGetFaceIndex(meshname,2);
             }
             else
             {
-                skinFace = FI(meshname,1);
-                lashskin = FI(meshname,3);
+                skinFace = xlGetFaceIndex(meshname,1);
+                lashskin = xlGetFaceIndex(meshname,3);
             }
             // if(visible)
                 // db("Applying texture on " + (string)what+"("+(string)lin+"), skin face "+(string)skinFace+" and lash face "+(string)skinFace);
@@ -411,8 +411,8 @@ SetEyeDirection()
 {
     integer lin = LN("eyes");
     if(lin < 1) return;
-    integer face1 = FI("eyes",1);
-// integer face2 = FI("eyes",2);
+    integer face1 = xlGetFaceIndex("eyes",1);
+// integer face2 = xlGetFaceIndex("eyes",2);
 float scale = 1;
 vector erp = eye_r_pos / 25.0;
 vector elp = eye_l_pos / 25.0;
@@ -543,23 +543,23 @@ SetFaceShape(integer idx)
     if(linteet < 0) return;
     db("Tongue:"+(string)lintong);
     if(11 <= idx) teeth_visible = 0;
-    // integer face1 = FI("tongue",0); /*  tongue */
-    // integer face2 = FI("teeth",0);
-    // integer face3 = FI("teeth",1);
+    // integer face1 = xlGetFaceIndex("tongue",0); /*  tongue */
+    // integer face2 = xlGetFaceIndex("teeth",0);
+    // integer face3 = xlGetFaceIndex("teeth",1);
     // IMPORTANT NOTE: the Teeth meshes supports some non-grinning
     // variations on state 3,4,7,and 10.
     // We should preserve that functionality while in typing state.
-    integer sclera1 = FI("eyes",0); /*  upper teeth, also eye sclera */
-    // integer sclera2 = FI("eyes",1); /*  upper teeth, also eye sclera */
-    // integer sclera3 = FI("eyes",2); /*  upper teeth, also eye sclera */
+    integer sclera1 = xlGetFaceIndex("eyes",0); /*  upper teeth, also eye sclera */
+    // integer sclera2 = xlGetFaceIndex("eyes",1); /*  upper teeth, also eye sclera */
+    // integer sclera3 = xlGetFaceIndex("eyes",2); /*  upper teeth, also eye sclera */
     // if(teeth_visible) tongue_out = FALSE;
     db("Teeth:"+(string)teeth_visible);
     list chg = [
     PRIM_LINK_TARGET,lintong,
-    PRIM_COLOR,FI("tongue",0),c_skin,tongue_out,
+    PRIM_COLOR,xlGetFaceIndex("tongue",0),c_skin,tongue_out,
     PRIM_LINK_TARGET,linteet,
-    PRIM_COLOR,FI("teeth",0),c_skin,!teeth_visible, /*  teeth 1 */
-    PRIM_COLOR,FI("teeth",1),c_skin,teeth_visible /*  teeth 2 */
+    PRIM_COLOR,xlGetFaceIndex("teeth",0),c_skin,!teeth_visible, /*  teeth 1 */
+    PRIM_COLOR,xlGetFaceIndex("teeth",1),c_skin,teeth_visible /*  teeth 2 */
     ];
     // if(first_pass)
     {
