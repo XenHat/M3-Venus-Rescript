@@ -79,9 +79,9 @@ integer curr_blush_mode = 0;
 integer curr_tears_mode = 0;
 integer tongue_out = FALSE;
 integer flstatus = FALSE;
-integer Derpy = 0;
+// integer Derpy = 0;
 // #if M3K_HUD_SUPPORT
-integer Teeny = 0;
+// integer Teeny = 0;
 // #endif
 integer first_pass = 1;
 list prims = [];
@@ -416,13 +416,13 @@ SetEyeDirection()
 float scale = 1;
 vector erp = eye_r_pos / 25.0;
 vector elp = eye_l_pos / 25.0;
-vector erp2;
-vector elp2;
-if(Derpy)
-{
-    elp .x = (0-erp .x); /*  Derp (iris)! */
-    elp2.x = (0-erp2.x); /*  Derp (pupil)! */
-}
+//vector erp2;
+//vector elp2;
+//if(Derpy)
+//{
+//    elp .x = (0-erp .x); /*  Derp (iris)! */
+//    elp2.x = (0-erp2.x); /*  Derp (pupil)! */
+//}
 #ifdef ADAPTIVE_IRISES
 /*  Adjust pupil aperture based on sun z. */
 vector snz = CFE(llGetSunDirection());
