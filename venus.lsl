@@ -85,7 +85,7 @@ integer flstatus = FALSE;
 // #endif
 integer first_pass = 1;
 list prims = [];
-list wert = [];
+list update_params = [];
 #ifdef ADAPTIVE_IRISES
 float pup_sc_r = 0.3;
 float pup_sc_l = 0.3;
@@ -220,26 +220,26 @@ SetFaceTexture(string what,vector color,float visible)
     integer face2 = xlGetFaceIndex(what,2);
     integer face3 = xlGetFaceIndex(what,3);
     /* Save tremendous amounts of memory by avoiding list copy-and-addition */
-    wert += [PRIM_LINK_TARGET,lin,PRIM_COLOR,face0,color,visible,PRIM_COLOR,face1,color,visible];
+    update_params += [PRIM_LINK_TARGET,lin,PRIM_COLOR,face0,color,visible,PRIM_COLOR,face1,color,visible];
     if(what != "eyes"){
         if(what == "root")
         {
-            wert += [PRIM_TEXTURE,face0 ,t_face_noshell_nolid_r,<1,1,1>,<0,0,0>,0];
-            wert += [PRIM_TEXTURE,face1 ,t_face_noshell_nolid_l,<1,1,1>,<0,0,0>,0];
+            update_params += [PRIM_TEXTURE,face0 ,t_face_noshell_nolid_r,<1,1,1>,<0,0,0>,0];
+            update_params += [PRIM_TEXTURE,face1 ,t_face_noshell_nolid_l,<1,1,1>,<0,0,0>,0];
         }
         else if(llSubStringIndex(what,"ears")==0)
         {
-            wert += [PRIM_COLOR,face2,color,visible];
-            wert += [PRIM_COLOR,face3,color,visible];
-            wert += [PRIM_TEXTURE,face3,t_face_r,<1,1,1>,<0,0,0>,0];
+            update_params += [PRIM_COLOR,face2,color,visible];
+            update_params += [PRIM_COLOR,face3,color,visible];
+            update_params += [PRIM_TEXTURE,face3,t_face_r,<1,1,1>,<0,0,0>,0];
             /* Remove spec */
-            /* wert += [PRIM_SPECULAR,face2,NULL_KEY,<1,1,1>,<0,0,0>,0,<1,1,1>,0,0]; */
-            /* wert += [PRIM_SPECULAR,face3,NULL_KEY,<1,1,1>,<0,0,0>,0,<1,1,1>,0,0]; */
+            /* update_params += [PRIM_SPECULAR,face2,NULL_KEY,<1,1,1>,<0,0,0>,0,<1,1,1>,0,0]; */
+            /* update_params += [PRIM_SPECULAR,face3,NULL_KEY,<1,1,1>,<0,0,0>,0,<1,1,1>,0,0]; */
         }
         /* TODO: Check if we can use the textures with alpha for everything but the blink prims instead. - Xenhat */
         else if(llSubStringIndex(what,"brow")==0)
         {
-            wert += [PRIM_COLOR,face2,c_eyebrow,visible,
+            update_params += [PRIM_COLOR,face2,c_eyebrow,visible,
             /* Actual brows */
             PRIM_TEXTURE, face2, t_brow,
             <1.0, 1.0, 0.0>, <0.0, 0.0, 0.0>, 0.0,
@@ -253,29 +253,29 @@ SetFaceTexture(string what,vector color,float visible)
         }
         else if(llSubStringIndex(what,"b")==0)
         { /* blink* prims */
-            wert += [PRIM_TEXTURE,face0,t_face_r,<1,1,1>,<0,0,0>,0];
-            wert += [PRIM_TEXTURE,face1,t_face_l,<1,1,1>,<0,0,0>,0];
-            wert += [PRIM_TEXTURE,face2,t_face_r,<1,1,1>,<0,0,0>,0];
+            update_params += [PRIM_TEXTURE,face0,t_face_r,<1,1,1>,<0,0,0>,0];
+            update_params += [PRIM_TEXTURE,face1,t_face_l,<1,1,1>,<0,0,0>,0];
+            update_params += [PRIM_TEXTURE,face2,t_face_r,<1,1,1>,<0,0,0>,0];
         }
         else if(llSubStringIndex(what,"e")==0)
         {
             /* Teeth */
-            wert += [PRIM_TEXTURE,face2,t_face_r,<1,1,1>,<0,0,0>,0];
+            update_params += [PRIM_TEXTURE,face2,t_face_r,<1,1,1>,<0,0,0>,0];
             /* Actual mouth shells */
-            wert += [PRIM_TEXTURE,face0,t_face_r,<1,1,1>,<0,0,0>,0];
-            wert += [PRIM_TEXTURE,face1,t_face_l,<1,1,1>,<0,0,0>,0];
+            update_params += [PRIM_TEXTURE,face0,t_face_r,<1,1,1>,<0,0,0>,0];
+            update_params += [PRIM_TEXTURE,face1,t_face_l,<1,1,1>,<0,0,0>,0];
         }
         // /* The actual eyelashes "hair" */
-        // wert += [PRIM_TEXTURE,face2,t_face_r,<1,1,1>,<0,0,0>,0];
-        // wert += [PRIM_COLOR,face2,color,visible];
+        // update_params += [PRIM_TEXTURE,face2,t_face_r,<1,1,1>,<0,0,0>,0];
+        // update_params += [PRIM_COLOR,face2,color,visible];
     }
 }
 Blitz()
 {
-    if(wert!=[])
+    if(update_params!=[])
     {
-        llSetLinkPrimitiveParamsFast(2,wert);
-        wert=[];
+        llSetLinkPrimitiveParamsFast(2,update_params);
+        update_params=[];
         // llOwnerSay("Blitz");
         #ifdef DEBUG
         llSetText("O:48274(52694)/65536\nC:"+
@@ -352,7 +352,7 @@ while (i < 4){
                 if( i < 3)
                 {
                     /*  Normal eyelash faces */
-                    wert += [PRIM_LINK_TARGET,lin
+                    update_params += [PRIM_LINK_TARGET,lin
                     ,PRIM_COLOR,skinFace,c_skin,visible
                     ,PRIM_COLOR,lashskin,c_eyelash,visible
                     ,PRIM_TEXTURE,skinFace,t_face_l,<1,1,1>,<0,0,0>,0
@@ -362,7 +362,7 @@ while (i < 4){
                 else
                 {
                     /*  "closed" eyelashes don't have a texture */
-                    wert += [PRIM_LINK_TARGET,lin
+                    update_params += [PRIM_LINK_TARGET,lin
                     ,PRIM_COLOR,skinFace,c_skin,visible
                     ,PRIM_COLOR,lashskin,c_eyelash,visible
                     ,PRIM_TEXTURE,skinFace,t_face_l,<1,1,1>,<0,0,0>,0
@@ -450,7 +450,7 @@ elp2 = elp * pup_sc_l;
 //    scale = 1.5; /*  Small irises! */
 //}
 // #endif
-wert += [PRIM_LINK_TARGET,lin,
+update_params += [PRIM_LINK_TARGET,lin,
 PRIM_COLOR,face1,c_eye_r,eyes_visible,PRIM_TEXTURE,face1,t_eye_iris_r,<scale,scale,0>,erp,0,
 PRIM_FULLBRIGHT,face1,fullbright_eyes,PRIM_GLOW,face1,(eye_glow*(blink_r<3))*eyes_visible,
 // PRIM_ALPHA_MODE, face1, PRIM_ALPHA_MODE_MASK, 1,
@@ -584,7 +584,7 @@ SetFaceShape(integer idx)
         //chg += [PRIM_TEXTURE,sclera3,t_face_noshell_nolid_r,<1,1,1>,<0,0,0>,0,PRIM_COLOR,sclera1,<1,1,1>,eyes_visible]; /*  teeth up + sclera */
         }
     }
-    wert+=[PRIM_LINK_TARGET,lin]+chg;
+    update_params+=[PRIM_LINK_TARGET,lin]+chg;
     #ifdef extra_sync
     /* Send updates to other parts using the hud format so that it sync properly: e.g. fangs */
     /*  We send this before changing the mouth shells so that it happens roughly at the same time */
@@ -1138,7 +1138,7 @@ and needless list copying.
 - Fixed some shell coloring
 - Fixed tongue behavior
 - Re-ordered some settings to ease modding.
-- Removed empty list check in wert function.
+- Removed empty list check in update_params function.
 - Removed extraneous parameter in SetFaceTexture
 - Removed one-time use active boolean
 - Removed one-time use DebugText function
