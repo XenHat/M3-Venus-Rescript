@@ -407,6 +407,22 @@ while (i < 4){
 //#endif
 //    return mas;
 //}
+
+#ifdef ADAPTIVE_IRISES
+vector CFE()
+{
+    rotation res;
+    vector fwd = llVecNorm(llGetSunDirection());
+    vector up = <0.0,1.0,0.0>;
+    vector lf = llVecNorm(up%fwd);
+    fwd = llVecNorm(lf%up);/*  else up = llVecNorm(fwd%lf); */
+    res = llAxes2Rot(fwd,lf,up);
+    if(res.z > 1.0) res.z = 1.0; /*  Just in case! */
+    if(res.z < -1.0) res.z = -1.0; /*  Just in case! */
+    return llVecNorm(<1,0,0>*res); /*  Return adjusted vector. */
+}
+#endif
+/*  Adjust pupil aperture based on sun z. */
 SetEyeDirection()
 {
     integer lin = xlGetLinkNumber("eyes");
@@ -424,8 +440,7 @@ vector elp = eye_l_pos / 25.0;
 //    elp2.x = (0-erp2.x); /*  Derp (pupil)! */
 //}
 #ifdef ADAPTIVE_IRISES
-/*  Adjust pupil aperture based on sun z. */
-vector snz = CFE(llGetSunDirection());
+vector snz = CFE();
 snz.z = (1.0-((snz.z+1.0)/2.0)) * 100.0;
 if(override_r == -1)
 {
@@ -488,18 +503,7 @@ PRIM_FULLBRIGHT,7,fullbright_eyes_l,PRIM_GLOW,7,(eye_glow_l*(blink_l<3))*eyes_vi
 //#endif
 // }
 }
-//vector CFE(vector fwd)
-//{
-//    rotation res;
-//    fwd = llVecNorm(fwd);
-//    vector up = <0.0,1.0,0.0>;
-//    vector lf = llVecNorm(up%fwd);
-//    fwd = llVecNorm(lf%up);/*  else up = llVecNorm(fwd%lf); */
-//    res = llAxes2Rot(fwd,lf,up);
-//    if(res.z > 1.0) res.z = 1.0; /*  Just in case! */
-//    if(res.z < -1.0) res.z = -1.0; /*  Just in case! */
-//    return llVecNorm(<1,0,0>*res); /*  Return adjusted vector. */
-//}
+
 SetFaceShape(integer idx)
 {
     /*  TODO: Change the face IDs to match the HUD ones and avoid all this duplicated logic. */
